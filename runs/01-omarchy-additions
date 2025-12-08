@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WITH_GAMES="${OMARCHY_GAMES:-0}"
+
+echo "[omarchy-additions] Installing omarchy additions..."
+
+omarchy-install-tailscale
+
+if [[ "$WITH_GAMES" == 1 ]]; then
+  echo "[omarchy-additions] Installing omarchy games additions..."
+
+  omarchy-install-steam
+fi

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[zen-browser] Installing Zen Browser..."
+
+sudo yay -S --noconfirm zen-browser-bin
+
+echo "[zen-browser] Checking if the browser is installed..."
+if ! command -v zen-browser &>/dev/null; then
+  echo "[zen-browser] Zen Browser is not installed, exiting..."
+  exit 1
+fi
+
+echo "[zen-browser] Installing Sine..."
+
+ARCH=$(uname -m)
+case "$ARCH" in
+        x86_64)         ARCH="x64" ;;
+        aarch64)        ARCH="arm64" ;;
+        arm64)          ARCH="arm64" ;;
+        *)              echo "    ERROR: Unsupported architecture: $ARCH"; exit 1 ;;
+esac
+
+echo "-> Detected architecture : $ARCH"
+
+SINE_VERSION=$(curl -s https://api.github.com/repos/CosmoCreeper/Sine/releases/latest | grep tag_name | cut -d '"' -f4)
+if [ -z "$SINE_VERSION" ]; then
+        echo "    ERROR: Could not fetch latest Sine version"
+        exit 1
+fi
+echo "-> Fetched lastest Sine version: $SINE_VERSION"
+
+echo "-> Downloading Sine binary..."
+curl -L -o /tmp/zen-browser-sine "https://github.com/CosmoCreeper/Sine/releases/download/$SINE_VERSION/sine-linux-$ARCH"
+
+chmod +x /tmp/zen-browser-sine
+
+pushd /tmp >/dev/null
+sudo ./zen-browser-sine
+popd >/dev/null
+
+if [ $? -eq 0 ]; then
+  echo "[zen-browser] Done."
+  rm /tmp/zen-browser-sine
+else
+  echo "[zen-browser] Failed to install Sine for Zen Browser."
+  exit 1
+fi
+
+sudo chown $(whoami):$(whoami) -R ~/.zen/*/chrome/

@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# --- Check OMARCHY_BTW ---
+: "${OMARCHY_BTW:?You must run the script like: OMARCHY_BTW=$(pwd) ./run}"
+
+# --- Parse arguments ---
+FILTER=""
+DRY=0
+INSTALL_ALL=0
+WITH_GAMES="${OMARCHY_GAMES:-0}"
+
+show_usage() {
+    cat << EOF
+Usage: OMARCHY_BTW=\$(pwd) ./run [OPTIONS] [FILTER]
+
+Options:
+  --all           Install all runs (ignores filter)
+  --filter TERM   Install all runs matching TERM
+  --with-games    Include games (can also set OMARCHY_GAMES=1)
+  --dry           Dry run mode (show what would be done)
+  -h, --help      Show this help message
+
+Environment Variables:
+  OMARCHY_BTW     Required. Path to omarchy directory
+  OMARCHY_GAMES   Set to 1 to include games (default: 0)
+
+Examples:
+  OMARCHY_BTW=\$(pwd) ./run --all
+  OMARCHY_BTW=\$(pwd) ./run --filter python
+  OMARCHY_BTW=\$(pwd) ./run --with-games --all
+  OMARCHY_GAMES=1 OMARCHY_BTW=\$(pwd) ./run --all
+EOF
+}
+
+# Parse arguments
+if [[ $# -eq 0 ]]; then
+    show_usage
+    exit 0
+fi
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        --all)
+            INSTALL_ALL=1
+            shift
+            ;;
+        --filter)
+            if [[ $# -lt 2 ]]; then
+                echo "Error: --filter requires an argument"
+                show_usage
+                exit 1
+            fi
+            FILTER="$2"
+            shift 2
+            ;;
+        --with-games)
+            WITH_GAMES=1
+            shift
+            ;;
+        --dry)
+            DRY=1
+            shift
+            ;;
+        *)
+            # Assume it's a filter if no flag
+            if [[ -z "$FILTER" && "$INSTALL_ALL" -eq 0 ]]; then
+                FILTER="$1"
+            else
+                echo "Error: Unknown option or multiple filters: $1"
+                show_usage
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+export OMARCHY_GAMES="$WITH_GAMES"
+
+log() {
+    if [[ "$DRY" == 1 ]]; then
+        echo "[DRY_RUN] $1"
+    else
+        echo "$1"
+    fi
+}
+
+# Build description of what we're doing
+MODE_DESC=""
+if [[ "$INSTALL_ALL" == 1 ]]; then
+    MODE_DESC="all runs"
+elif [[ -n "$FILTER" ]]; then
+    MODE_DESC="runs matching '$FILTER'"
+else
+    echo "Error: Must specify --all or provide a filter"
+    show_usage
+    exit 1
+fi
+
+GAMES_DESC=""
+if [[ "$WITH_GAMES" == 1 ]]; then
+    GAMES_DESC=" (including games)"
+else
+    GAMES_DESC=" (excluding games)"
+fi
+
+log "Running scripts in $script_dir/runs: $MODE_DESC$GAMES_DESC (dry=$DRY)"
+
+for s in "$script_dir"/runs/*; do
+    [[ -x "$s" ]] || continue
+    name="$(basename "$s")"
+    
+    # Skip games if WITH_GAMES is not set
+    if [[ "$WITH_GAMES" != 1 ]]; then
+        # Define game scripts (add patterns as needed)
+        case "$name" in
+            *game*|*play*|steam*|lutris*|wine*)
+                log "Skipping game: $name"
+                continue
+                ;;
+        esac
+    fi
+    
+    # Skip if FILTER does not match (unless --all is specified)
+    if [[ "$INSTALL_ALL" == 0 && -n "$FILTER" ]]; then
+        if [[ ! "$name" =~ $FILTER ]]; then
+            continue
+        fi
+    fi
+    
+    log "Running: $name"
+    if [[ "$DRY" == 0 ]]; then
+        "$s"
+    fi
+done
+
+log "Done!"

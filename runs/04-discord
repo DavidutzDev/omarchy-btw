@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SETTINGS_FILE="$HOME/.config/discord/settings.json"
+
+mkdir -p "$(dirname "$SETTINGS_FILE")"
+
+echo "[discord] Installing Discord..."
+
+sudo pacman -S --noconfirm discord
+
+echo "[discord] Checking if the browser is installed..."
+if ! command -v discord &>/dev/null; then
+  echo "[discord] Discord is not installed, exiting..."
+  exit 1
+fi
+
+echo "[discord] Patching Discord to disable update checks..."
+if [ ! -f "$SETTINGS_FILE" ]; then
+  echo "{}" > "$SETTINGS_FILE"
+fi
+
+jq '. + {"SKIP_HOST_UPDATE": true}' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
+
+mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+
+echo "[discord] Installing Vencord..."
+
+sh -c "$(curl -sS https://vencord.dev/install.sh)"

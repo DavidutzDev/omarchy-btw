@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PACKAGES=(
+    signal-desktop
+    obsidian
+    1password-cli
+    1password-beta
+)
+
+echo "[clean-omarchy] Removing unwanted packages..."
+
+for pkg in "${PACKAGES[@]}"; do
+  echo "-> Removing: $pkg"
+  if ! sudo pacman -Rns --noconfirm "$pkg"; then
+    echo "⚠ Warning : could not remove $pkg"
+  fi
+done
+
+WEBAPPS=(
+    Basecamp
+    Discord
+    "Google Messages"
+    "Google Contacts"
+    "Google Photos"
+    HEY
+    WhatsApp
+    Zoom
+    X
+)
+
+echo "[clean-omarchy] Removing unwanted webapps..."
+
+for webapp in "${WEBAPPS[@]}"; do
+  echo "-> Removing: $webapp"
+  if ! omarchy-webapp-remove "$webapp"; then
+    echo "⚠ Warning : could not remove $webapp"
+  fi
+done
+
+echo "[clean-omarchy] Done."

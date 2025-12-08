@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="$OMARCHY_BTW/dotfiles"
+REPO_URL="https://github.com/DavidutzDev/dotfiles"
+REPO_NAME="dotfiles"
+
+echo "[dotfiles] Checking if stow is installed"
+if ! pacman -Qi "stow" &>/dev/null; then
+  echo "[dotfiles] Stow is not installed, installing it..."
+  sudo pacman -S --noconfirm stow
+else
+  echo "[dotfiles] Stow is already installed, skipping installation"
+fi
+
+echo "[dotfiles] Checking if the repository exists and is up to date..."
+if [ -d "$DOTFILES/.git" ]; then
+  echo "[dotfiles] Repository '$REPO_NAME' already exists, updating it..."
+  pushd "$DOTFILES" >/dev/null
+  git pull --ff-only
+  popd >/dev/null
+else
+  echo "[dotifles] Repositroy not found, cloning it..."
+  git clone "$REPO_URL" "$DOTFILES"
+fi
+
+if [ $? -eq 0 ]; then
+  echo "[dotfiles] Removing old configs..."
+  rm -rf ~/.config/nvim ~/.local/share/nvim ~/.cache/nvim ~/.config/starship.toml ~/.config/hypr
+
+  pushd "$DOTFILES" >/dev/null
+  echo "[dotfiles] Sourcing all the dotfiles"
+
+  stow -t $HOME hyprland
+  stow -t $HOME nvim
+  stow -t $HOME starship
+  popd >/dev/null
+
+  echo "[dotfiles] We need to restart some services to apply the changes"
+  hyprctl reload
+fi
+
+echo "[dotfiles] Done."
