@@ -1,0 +1,9 @@
+[00:17:49 2025-12-09] FETCHING Version 2.42.5
+[00:17:49 2025-12-09] DOWNLOADING https://github.com/spicetify/cli/releases/download/v2.42.5/spicetify-2.42.5-linux-amd64.tar.gz
+[00:17:51 2025-12-09] EXTRACTING /home/davidutz/.spicetify/spicetify.tar.gz
+[00:17:51 2025-12-09] SETTING EXECUTABLE PERMISSIONS TO /home/davidutz/.spicetify/spicetify
+[00:17:51 2025-12-09] REMOVING /home/davidutz/.spicetify/spicetify.tar.gz
+[00:17:51 2025-12-09] spicetify path already set in /home/davidutz/.bashrc, continuing...
+[00:17:51 2025-12-09] spicetify path already set in /home/davidutz/.bash_profile, continuing...
+[00:17:51 2025-12-09] spicetify v2.42.5 was installed successfully to /home/davidutz/.spicetify
+[00:17:51 2025-12-09] Run 'spicetify --help' to get started
