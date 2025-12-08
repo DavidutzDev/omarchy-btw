@@ -20,6 +20,20 @@ if [ ! -f "$SETTINGS_FILE" ]; then
   echo "{}" > "$SETTINGS_FILE"
 fi
 
+echo "[discord] Patching Discord hyprland keybinds passthrough..."
+DESKTOP_FILE="$HOME/.local/share/applications/discord.desktop"
+
+cp /usr/share/applications/discord.desktop "$DESKTOP_FILE"
+
+echo "[discord] Ensuring ELECTRON_OZONE_PLATFORM_HINT=x11 is present in Exec line..."
+
+if ! grep -q "ELECTRON_OZONE_PLATFORM_HINT=" "$DESKTOP_FILE"; then
+    sed -i 's|^Exec=|Exec=env ELECTRON_OZONE_PLATFORM_HINT=x11 |' "$DESKTOP_FILE"
+    echo "[discord] Patched Exec line with ELECTRON_OZONE_PLATFORM_HINT=x11"
+else
+    echo "[discord] Exec already contains ELECTRON_OZONE_PLATFORM_HINT — skipping."
+fi
+
 jq '. + {"SKIP_HOST_UPDATE": true}' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
 
 mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
