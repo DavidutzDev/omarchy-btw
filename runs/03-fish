@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[fish] Checking if fish is installed"
+if ! pacman -Qi "fish" &>/dev/null; then
+  echo "[fish] fish is not installed, installing it..."
+  sudo pacman -S --noconfirm fish
+else
+  echo "[fish] Fish is already installed, skipping installation"
+fi
+
+FISH_CONFIG="$HOME/.config/fish"
+FISHER_PATH="$FISH_CONFIG/functions/fisher.fish"
+
+echo "[fish] Checking if fisher is installed"
+if ! [ -f "$FISHER_PATH" ]; then
+  echo "[fish] Fisher is not installed, installing it..."
+  fish -c "curl -sL https://git.io/fisher | source; and fisher install jorgebucaran/fisher"
+else
+  echo "[fish] Fisher is already installed, skipping installation"
+fi
+
+PLUGINS=(
+  "patrickf1/fzf.fish"
+  "kidonng/zoxide.fish"
+)
+
+echo "[fish] Ensuring all plugins are installed"
+for plugin in "${PLUGINS[@]}"; do
+  if fish -c "fisher list | grep -q '$plugin'"; then
+    echo "[fish] $plugin is already installed, skipping installation"
+  else
+    echo "[fish] Installing $plugin"
+    fish -c "fisher install $plugin"
+  fi
+done
+
+echo "[fish] Done."

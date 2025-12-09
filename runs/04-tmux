@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SESSIONIZER_DIR="$HOME/.local/bin/"
+SESSIONIZER_BIN="$SESSIONIZER_DIR/tmux-sessionizer"
+SESSIONIZER_DOWNLOAD_URL="https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/refs/heads/master/tmux-sessionizer"
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+mkdir -p "$SESSIONIZER_DIR"
+
+echo "[tmux] Checking if tmux is installed"
+if ! pacman -Qi "tmux" &>/dev/null; then
+  echo "[tmux] tmux is not installed, installing it..."
+  sudo pacman -S --noconfirm tmux
+else
+  echo "[tmux] Tmux is already installed, skipping installation"
+fi
+
+echo "[tmux] Checking if tmux sessionizer is installed"
+
+if ! [ -f "$SESSIONIZER_BIN" ]; then
+  echo "[tmux] Sessionizer is not installed, installing it..."
+  curl -sL "$SESSIONIZER_DOWNLOAD_URL" -o "$SESSIONIZER_BIN"
+  chmod +x "$SESSIONIZER_BIN"
+else
+  echo "[tmux] Sessionizer is already installed, skipping installation"
+fi
+
+echo "[tmux] Checking if TPM (Tmux Plugin Manager) is installed"
+if ! [ -d "$TPM_DIR" ]; then
+  echo "[tmux] TPM is not installed, installing it..."
+  git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+else
+  echo "[tmux] TPM is already installed, skipping installation"
+fi
+
+echo "[tmux] Done."
