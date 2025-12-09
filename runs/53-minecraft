@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WITH_GAMES="${OMARCHY_GAMES:-0}"
+
+if [[ "$WITH_GAMES" != 1 ]]; then
+  echo "[minecraft] Skipping Minecraft installation, as OMARCHY_GAMES is not set to 1..."
+  exit 0
+fi
+
+echo "[minecraft] Checking if Prism Launcher is installed"
+if ! pacman -Qi "prismlauncher" &>/dev/null; then
+  echo "[minecraft] prismlauncher is not installed, installing it..."
+  sudo pacman -S --noconfirm prismlauncher
+else
+  echo "[minecraft] Prism Launcher is already installed, skipping installation"
+fi
+
+echo "[minecraft] Checking if Lunar Client is installed"
+if ! yay -Qi "lunar-client" &>/dev/null; then
+  echo "[minecraft] lunar-client is not installed, installing it..."
+  yay -S --noconfirm lunar-client
+else
+  echo "[minecraft] Lunar Client is already installed, skipping installation"
+fi
+
+echo "[minecraft] Done."
