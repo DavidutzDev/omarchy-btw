@@ -11,6 +11,11 @@ PACKAGES=(
 echo "[clean-omarchy] Removing unwanted packages..."
 
 for pkg in "${PACKAGES[@]}"; do
+  if pacman -Qi "$pkg" &>/dev/null; then
+    echo "-> Skipping: $pkg"
+    continue
+  fi
+
   echo "-> Removing: $pkg"
   if ! sudo pacman -Rns --noconfirm "$pkg"; then
     echo "⚠ Warning : could not remove $pkg"

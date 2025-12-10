@@ -3,15 +3,25 @@ set -euo pipefail
 
 echo "[zen-browser] Installing Zen Browser..."
 
-sudo yay -S --noconfirm zen-browser-bin
-
-echo "[zen-browser] Checking if the browser is installed..."
-if ! command -v zen-browser &>/dev/null; then
-  echo "[zen-browser] Zen Browser is not installed, exiting..."
-  exit 1
+if ! yay -Qi zen-browser-bin &>/dev/null; then
+  echo "[zen-browser] Zen Browser is not installed, installing it..."
+  yay -S --noconfirm zen-browser-bin
+else
+  echo "[zen-browser] Zen Browser is already installed, skipping installation"
 fi
 
-echo "[zen-browser] Installing Sine..."
+echo "[zen-browser] Checking if Sine is already installed..."
+
+SINE_FILE=$(ls ~/.zen/*Default*/chrome/JS/sine.uc.mjs 2>/dev/null || true)
+
+if [[ -n "$SINE_FILE" ]]; then
+  echo "[zen-browser] Sine is already installed at:"
+  echo "  $SINE_FILE"
+  echo "[zen-browser] Skipping Sine installation."
+  exit 0
+fi
+
+echo "[zen-browser] Sine not found, installing..."
 
 ARCH=$(uname -m)
 case "$ARCH" in

@@ -7,13 +7,13 @@ mkdir -p "$(dirname "$SETTINGS_FILE")"
 
 echo "[discord] Installing Discord..."
 
-sudo pacman -S --noconfirm discord
-
-echo "[discord] Checking if the browser is installed..."
-if ! command -v discord &>/dev/null; then
-  echo "[discord] Discord is not installed, exiting..."
-  exit 1
+if ! pacman -Qi discord &>/dev/null; then
+  echo "[discord] Discord is not installed, installing it..."
+  pacman -S --noconfirm discord
+else
+  echo "[discord] Discord is already installed, skipping installation"
 fi
+
 
 echo "[discord] Patching Discord to disable update checks..."
 if [ ! -f "$SETTINGS_FILE" ]; then
@@ -23,7 +23,10 @@ fi
 echo "[discord] Patching Discord hyprland keybinds passthrough..."
 DESKTOP_FILE="$HOME/.local/share/applications/discord.desktop"
 
-cp /usr/share/applications/discord.desktop "$DESKTOP_FILE"
+if [ ! -f "$DESKTOP_FILE" ]; then
+  echo "[discord] Desktop file not found, creating it..."
+  cp /usr/share/applications/discord.desktop "$DESKTOP_FILE"
+fi
 
 echo "[discord] Ensuring ELECTRON_OZONE_PLATFORM_HINT=x11 is present in Exec line..."
 
@@ -38,6 +41,13 @@ jq '. + {"SKIP_HOST_UPDATE": true}' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
 
 mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
 
-echo "[discord] Installing Vencord..."
+echo "[discord] Checking if Vencord is already installed..."
+
+if [ -d "$HOME/.config/Vencord" ]; then
+  echo "[discord] Vencord is already installed, skipping installation"
+  exit 0
+fi
+
+echo "[discord] Vencord not found, installing..."
 
 sh -c "$(curl -sS https://vencord.dev/install.sh)"

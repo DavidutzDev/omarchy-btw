@@ -3,36 +3,42 @@ set -euo pipefail
 
 echo "[spotify] Installing Spotify..."
 
-sudo pacman -S --noconfirm spotify
-
-echo "[spotify] Checking if spotify is installed..."
-if ! command -v spotify &>/dev/null; then
-  echo "[spotify] Spotify is not installed, exiting..."
-  exit 1
+if ! pacman -Qi spotify &>/dev/null; then
+  echo "[spotify] Spotify is not installed, installing it..."
+  sudo pacman -S --noconfirm spotify
+else
+  echo "[spotify] Spotify is already installed, skipping installation"
 fi
 
 echo "[spotify] Fixing spotify permissions..."
 sudo chmod -R a+wr /opt/spotify
 
-echo "[spotify] Spicing up Spotify..."
+if ! command -v spicetify &>/dev/null; then
+  echo "[spotify] Spicetify is not installed, installing it..."
 
-if [[ -d "$HOME/.spicetify" ]]; then
-  export PATH="$HOME/.spicetify:$PATH"
-fi
+  if [[ -d "$HOME/.spicetify" ]]; then
+    export PATH="$HOME/.spicetify:$PATH"
+  fi
 
-set +e
-curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
-set -e
+  set +e
+  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+  set -e
 
-if command -v spicetify &>/dev/null; then
-  echo "[spotify] Spicetify installation successful!"
+  if command -v spicetify &>/dev/null; then
+    echo "[spotify] Spicetify installation successful!"
+  else
+    echo "[spotify] Spicetify installation failed with exit code $installer_status"
+    exit 1
+  fi
+
+  echo "[spotify] Applying Spicetify..."
+  spicetify backup apply
 else
-  echo "[spotify] Spicetify installation failed with exit code $installer_status"
-  exit 1
+  echo "[spotify] Spotify is already installed, skipping installation"
 fi
 
 echo "[spotify] Applying Spicetify..."
-spicetify backup apply
+
 spicetify apply
 
 echo "[spotify] Done!"

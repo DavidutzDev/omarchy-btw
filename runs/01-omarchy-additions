@@ -5,10 +5,22 @@ WITH_GAMES="${OMARCHY_GAMES:-0}"
 
 echo "[omarchy-additions] Installing omarchy additions..."
 
-omarchy-install-tailscale
+if ! pacman -Qi tailscale &>/dev/null; then
+  echo "[omarchy-additions] Tailscale is not installed, installing it..."j
+
+  omarchy-install-tailscale
+else
+  echo "[omarchy-additions] Tailscale is already installed, skipping installation"
+fi
+
 
 if [[ "$WITH_GAMES" == 1 ]]; then
   echo "[omarchy-additions] Installing omarchy games additions..."
 
-  omarchy-install-steam
+  if ! pacman -Qi steam &>/dev/null; then
+    echo "[omarchy-additions] Steam is not installed, installing it..."
+    omarchy-install-steam
+  else
+    echo "[omarchy-additions] Steam is already installed, skipping installation"
+  fi
 fi
