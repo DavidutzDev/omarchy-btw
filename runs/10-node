@@ -9,3 +9,14 @@ else
   echo "[node] nvm is installed, installing node lts version..."
   fish -c "nvm install lts"
 fi
+
+echo "[node] Checking if pnpm is installed"
+if ! command -v pnpm &>/dev/null; then
+  echo "[node] pnpm is not installed, installing it..."
+
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+else
+  echo "[node] pnpm is already installed, skipping installation"
+fi
+
+echo "[node] Done."
