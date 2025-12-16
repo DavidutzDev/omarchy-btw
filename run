@@ -34,9 +34,61 @@ Examples:
 EOF
 }
 
+# Utils
+log() {
+    if [[ "$DRY" == 1 ]]; then
+        echo "[DRY_RUN] $1"
+    else
+        echo "$1"
+    fi
+}
+
+list_scripts() {
+    for s in "$script_dir"/runs/*; do
+        [[ -x "$s" ]] || continue
+        name="$(basename "$s")"
+
+        if [[ "$WITH_GAMES" != 1 ]]; then
+            case "$name" in
+                *game*|*play*|steam*|lutris*|wine*)
+                    continue
+                    ;;
+            esac
+        fi
+
+        echo "$name"
+    done
+}
+
 # Parse arguments
 if [[ $# -eq 0 ]]; then
-    show_usage
+    command -v fzf >/dev/null 2>&1 || {
+        echo "Error: fzf is required for interactive mode"
+        exit 1
+    }
+
+    export OMARCHY_GAMES="$WITH_GAMES"
+
+    log "No arguments provided — opening fzf picker"
+
+    mapfile -t SELECTED < <(
+        list_scripts | fzf -m --prompt="Select scripts to run > "
+    )
+
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        echo "No scripts selected. Exiting."
+        exit 0
+    fi
+
+    for name in "${SELECTED[@]}"; do
+        s="$script_dir/runs/$name"
+        log "Running: $name"
+        if [[ "$DRY" == 0 ]]; then
+            "$s"
+        fi
+    done
+
+    log "Done!"
     exit 0
 fi
 
@@ -83,14 +135,6 @@ done
 
 export OMARCHY_GAMES="$WITH_GAMES"
 
-log() {
-    if [[ "$DRY" == 1 ]]; then
-        echo "[DRY_RUN] $1"
-    else
-        echo "$1"
-    fi
-}
-
 # Build description of what we're doing
 MODE_DESC=""
 if [[ "$INSTALL_ALL" == 1 ]]; then
@@ -115,7 +159,7 @@ log "Running scripts in $script_dir/runs: $MODE_DESC$GAMES_DESC (dry=$DRY)"
 for s in "$script_dir"/runs/*; do
     [[ -x "$s" ]] || continue
     name="$(basename "$s")"
-    
+
     # Skip games if WITH_GAMES is not set
     if [[ "$WITH_GAMES" != 1 ]]; then
         # Define game scripts (add patterns as needed)
@@ -126,14 +170,14 @@ for s in "$script_dir"/runs/*; do
                 ;;
         esac
     fi
-    
+
     # Skip if FILTER does not match (unless --all is specified)
     if [[ "$INSTALL_ALL" == 0 && -n "$FILTER" ]]; then
         if [[ ! "$name" =~ $FILTER ]]; then
             continue
         fi
     fi
-    
+
     log "Running: $name"
     if [[ "$DRY" == 0 ]]; then
         "$s"

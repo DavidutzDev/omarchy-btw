@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[node] Checking if nvm is installed"
+if ! fish -c "type -q nvm" &>/dev/null; then
+  echo "[node] nvm is not installed, skipping this script..."
+  exit 1
+else
+  echo "[node] nvm is installed, installing node lts version..."
+  fish -c "nvm install lts"
+fi

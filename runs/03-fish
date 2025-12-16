@@ -23,6 +23,7 @@ fi
 PLUGINS=(
   "patrickf1/fzf.fish"
   "kidonng/zoxide.fish"
+  "jorgebucaran/nvm.fish"
 )
 
 echo "[fish] Ensuring all plugins are installed"
