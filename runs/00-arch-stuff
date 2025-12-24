@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+  
+YAY_DIR="/tmp/yay"
+
+echo "[arch-stuff] Installing system dependencies..."
+
+sudo pacman -Sy --noconfirm dkms linux-headers git base-devel
+
+sudo pacman -Syu --noconfirm
+
+echo "[arch-stuff] Checking if yay i installed..."
+if ! pacman -Qi yay &>/dev/null; then
+  echo "[arch-stuff] Installing yay..."
+
+  mkdir -p "$YAY_DIR"
+  pushd "$YAY_DIR" &>/dev/null
+
+  sudo pacman -S --needed git base-devel
+  git clone https://aur.archlinux.org/yay.git
+  cd yay
+  makepkg -si
+
+  popd &>/dev/null
+
+else
+  echo "[arch-stuff] Yay is already installed, skipping installation"
+fi
+
+echo "[arch-stuff] I want to stay up to date with arch..."
+if ! yay -Qi arch-update &>/dev/null; then
+  echo "[arch-stuff] Installing arch-update..."
+  yay -S arch-update
+else
+  echo "[arch-stuff] Arch-update is already installed, skipping installation"
+fi
+
+echo "[arch-stuff] Done."

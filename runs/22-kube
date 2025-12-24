@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[kube] Checking if kubectl is installed"
+if ! yay -Qi kubectl &>/dev/null; then
+  echo "[kube] kubectl is not installed, installing it..."
+  sudo pacman -S --noconfirm kubectl
+else
+  echo "[kube] kubectl is already installed, skipping installation"
+fi
+
+echo "[kube] Checking if sops is installed"
+if ! yay -Qi sops &>/dev/null; then
+  echo "[kube] sops is not installed, installing it..."
+  sudo pacman -S --noconfirm sops
+else
+  echo "[kube] sops is already installed, skipping installation"
+fi
+
+echo "[kube] Done."

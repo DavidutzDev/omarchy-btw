@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[devtools] Checking if lazysql is installed"
+if ! yay -Qi lazysql &>/dev/null; then
+  echo "[devtools] lazysql is not installed, installing it..."
+  yay -S --noconfirm lazysql
+else
+  echo "[devtools] lazysql is already installed, skipping installation"
+fi
+
+
+echo "[devtools] Checking if postman-bin is installed"
+if ! yay -Qi postman-bin &>/dev/null; then
+  echo "[devtools] postman-bin is not installed, installing it..."
+  yay -S --noconfirm postman-bin
+else
+  echo "[devtools] postman-bin is already installed, skipping installation"
+fi
+
+echo "[devtools] Done."

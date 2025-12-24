@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Recently Nvidia dropped support of Pascal and lower GPUs
+# So the base nvidia drivers from arch repo aren't supporting my old messy GPU anymore sadly
+# Thanks to ventureo (CatchyOS) for maintaing the old legacy drivers
+# https://archlinux.org/news/nvidia-590-driver-drops-pascal-support-main-packages-switch-to-open-kernel-modules/
+
+echo "[i-hate-nvidia] Uninstalling nvidia drivers..."
+
+sudo pacman -Rdd --noconfirm nvidia nvidia-utils nvidia-settings nvidia-dkms nvidia-open-dkms nvidia-lts lib32-nvidia-utils
+
+echo "[i-hate-nvidia] Installing legacy nvidia drivers..."
+
+yay -S nvidia-580xx-dkms nvidia-580xx-utils lib32-nvidia-580xx-utils nvidia-580xx-settings
+
+echo "[i-hate-nvidia] Don't forget to reboot your system!"
+
+echo "[i-hate-nvidia] Done."
