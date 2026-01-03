@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# I'm using a realtek card for now, might change in the future
+
+echo "[network-drivers] Installing r8125 drivers..."
+
+yay -S r8125-dkms --noconfirm
+
+echo "[network-drivers] Done."
