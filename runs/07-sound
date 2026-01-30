@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[sound] Installing easyeffect..."
+
+if ! pacman -Qi easyeffect &>/dev/null; then
+  echo "[sound] EasyEffect is not installed, installing it..."
+
+  sudo pacman -S --noconfirm easyeffect
+else
+  echo "[sound] EasyEffect is already installed, skipping installation"
+fi
+
+echo "[sound] Installing Linux Studio Plugins..."
+
+if ! pacman -Qi lsp-plugins &>/dev/null; then
+  echo "[sound] Linux Studio Plugins are not installed, installing them..."
+
+  sudo pacman -S --noconfirm lsp-plugins
+else
+  echo "[sound] Linux Studio Plugins are already installed, skipping installation"
+fi
+
+if ! pacman -Qi calf &>/dev/null; then
+  echo "[sound] Calf is not installed, installing it..."
+
+  sudo pacman -S --noconfirm calf
+else
+  echo "[sound] Calf is already installed, skipping installation"
+fi
