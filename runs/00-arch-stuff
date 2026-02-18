@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-  
+
 YAY_DIR="/tmp/yay"
 
 echo "[arch-stuff] Installing system dependencies..."
