@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[tools] Installing system tools..."
+
+echo "[tools] Checking if pww is installed..."
+if ! yay -Qi pww-bin &>/dev/null; then
+  echo "[tools] Installing pww..."
+  yay --noconfirm -S pww-bin
+else
+  echo "[tools] pww is already installed, skipping installation"
+fi
+
+echo "[tools] Done."

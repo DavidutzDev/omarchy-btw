@@ -26,7 +26,7 @@ fi
 
 if [ $? -eq 0 ]; then
   echo "[dotfiles] Removing old configs..."
-  rm -rf ~/.config/nvim ~/.local/share/nvim ~/.cache/nvim ~/.config/starship.toml ~/.config/hypr ~/.config/fish ~/.config/ghostty ~/.config/waybar ~/.tmux
+  rm -rf ~/.config/nvim ~/.local/share/nvim ~/.cache/nvim ~/.config/starship.toml ~/.config/hypr ~/.config/fish ~/.config/ghostty ~/.config/waybar ~/.tmux ~/.custom-scripts
   rm ~/.tmux.conf ~/.tmux-sessionizer
 
   pushd "$DOTFILES" >/dev/null
@@ -39,6 +39,7 @@ if [ $? -eq 0 ]; then
   stow -t $HOME ghostty
   stow -t $HOME waybar
   stow -t $HOME tmux
+  stow -t $HOME custom-scripts
   popd >/dev/null
 
   echo "[dotfiles] We need to restart some services to apply the changes"
