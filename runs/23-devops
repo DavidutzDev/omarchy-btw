@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[devops] Checking if opentofu is installed"
+if ! yay -Qi opentofu-bin &>/dev/null; then
+  echo "[devops] opentofu is not installed, installing it..."
+  yay -S --noconfirm opentofu-bin
+else
+  echo "[devops] opentofu is already installed, skipping installation"
+fi
+
+echo "[devops] Done."

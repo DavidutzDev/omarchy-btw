@@ -8,7 +8,7 @@ set -euo pipefail
 
 echo "[i-hate-nvidia] Uninstalling nvidia drivers..."
 
-sudo pacman -Rdd --noconfirm nvidia nvidia-utils nvidia-settings nvidia-dkms nvidia-open-dkms nvidia-lts lib32-nvidia-utils
+# sudo pacman -Rdd --noconfirm nvidia nvidia-utils nvidia-settings nvidia-dkms nvidia-open-dkms nvidia-lts lib32-nvidia-utils
 
 echo "[i-hate-nvidia] Installing legacy nvidia drivers..."
 

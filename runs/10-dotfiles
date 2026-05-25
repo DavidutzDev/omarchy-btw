@@ -26,8 +26,8 @@ fi
 
 if [ $? -eq 0 ]; then
   echo "[dotfiles] Removing old configs..."
-  rm -rf ~/.config/nvim ~/.local/share/nvim ~/.cache/nvim ~/.config/starship.toml ~/.config/hypr ~/.config/fish ~/.config/ghostty ~/.config/waybar ~/.tmux ~/.custom-scripts
-  rm ~/.tmux.conf ~/.tmux-sessionizer
+  rm -rf ~/.config/nvim ~/.local/share/nvim ~/.cache/nvim ~/.config/starship.toml ~/.config/opencode ~/.config/hypr ~/.config/fish ~/.config/ghostty ~/.config/waybar ~/.tmux ~/.custom-scripts ~/.config/tmux 2>/dev/null || true
+  rm ~/.tmux.conf ~/.tmux-sessionizer 2>/dev/null || true
 
   pushd "$DOTFILES" >/dev/null
   echo "[dotfiles] Sourcing all the dotfiles"
@@ -40,6 +40,7 @@ if [ $? -eq 0 ]; then
   stow -t $HOME waybar
   stow -t $HOME tmux
   stow -t $HOME custom-scripts
+  stow -t $HOME opencode
   popd >/dev/null
 
   echo "[dotfiles] We need to restart some services to apply the changes"

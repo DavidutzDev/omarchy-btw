@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[peripherals] Installing Piper..."
+
+if ! pacman -Qi piper &>/dev/null; then
+  echo "[peripherals] Piper is not installed, installing it..."
+
+  sudo pacman -S --noconfirm piper
+else
+  echo "[peripherals] Piper is already installed, skipping installation"
+fi

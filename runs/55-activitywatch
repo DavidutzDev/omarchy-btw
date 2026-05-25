@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[activitywatch] Checking if ActivityWatch is installed"
+if ! yay -Qi activitywatch &>/dev/null; then
+  echo "[activitywatch] activitywatch is not installed, installing it..."
+  yay -S --noconfirm activitywatch-bin
+else
+  echo "[activitywatch] ActivityWatch is already installed, skipping installation"
+fi
+
+echo "[activitywatch] Checking if ActivityWatch Hyprland is installed"
+if ! command -v aw-watcher-window-hyprland >/dev/null 2>&1; then
+  echo "[activitywatch] activitywatch-hyprland is not installed, installing it..."
+
+  REPO_DIR="$HOME/personal/aw-watcher-window-hyprland"
+
+  if [ -d "$REPO_DIR" ]; then
+    echo "[activitywatch] Repo exists, pulling latest changes..."
+    git -C "$REPO_DIR" pull
+  else
+    echo "[activitywatch] Cloning repo..."
+    git clone https://github.com/bobvanderlinden/aw-watcher-window-hyprland "$REPO_DIR"
+  fi
+
+  echo "[activitywatch] Installing with cargo..."
+  cargo install --path "$REPO_DIR" --root "$HOME/.local"
+
+else
+  echo "[activitywatch] ActivityWatch Hyprland is already installed, skipping installation"
+fi

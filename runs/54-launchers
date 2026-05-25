@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WITH_GAMES="${OMARCHY_GAMES:-0}"
+
+if [[ "$WITH_GAMES" != 1 ]]; then
+  echo "[launchers] Skipping Launchers installation, as OMARCHY_GAMES is not set to 1..."
+  exit 0
+fi
+
+echo "[launchers] Checking if Lutris is installed"
+if ! pacman -Qi "lutris" &>/dev/null; then
+  echo "[launchers] lutris is not installed, installing it..."
+  sudo pacman -S --noconfirm lutris
+else
+  echo "[launchers] Lutris is already installed, skipping installation"
+fi
+
+echo "[launchers] Checking if Heroic Launcher is installed"
+if ! yay -Qi "heroic-games-launcher" &>/dev/null; then
+  echo "[launchers] heroic-games-launcher-bin is not installed, installing it..."
+  sudo pacman -S --noconfirm heroic-games-launcher-bin
+else
+  echo "[launchers] Heroic Launcher is already installed, skipping installation"
+fi
